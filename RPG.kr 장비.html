@@ -1,0 +1,1339 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>RPG.kr 장비 (v 1.1.1)</title>
+<style>
+.side{
+padding-top:40px;
+width:265px;
+background-color:#eee;
+border-right:1px solid #ddd;
+position:absolute;
+height:100%;
+display: flex;
+}
+.ma{
+left:260px;
+padding-left:20px;
+padding-top:5px;
+padding-right:20px;
+position:absolute;
+}
+.list{
+top:1000px;
+width:265px;
+position:absolute;
+}
+.list td{
+padding:0px;
+height:100px;
+}
+#tbody2 td{
+height:100px;
+
+padding:0px;
+}
+table{
+width:100%;
+border-collapse: collapse;
+}
+th, td {
+border-bottom: 1px solid #444444;
+padding: 6px;
+height:69px;
+width:50px;
+}
+tbody{
+text-align:center;
+}
+.right{
+margin-right: auto;
+}
+.sum{
+background-color:green;
+}
+</style>
+<script>
+//세트 이름, 아이템 능력치 저장
+var equipment=[["무기", 0, 0, 0, 0, 0, 0, 0, 0, 0],
+["보조", 0, 0, 0, 0, 0, 0, 0, 0, 0],
+["머리", 0, 0, 0, 0, 0, 0, 0, 0, 0],
+["목걸이", 0, 0, 0, 0, 0, 0, 0, 0, 0],
+["갑옷", 0, 0, 0, 0, 0, 0, 0, 0, 0],
+["장갑", 0, 0, 0, 0, 0, 0, 0, 0, 0],
+["반지", 0, 0, 0, 0, 0, 0, 0, 0, 0],
+["신발", 0, 0, 0, 0, 0, 0, 0, 0, 0],
+["팔찌", 0, 0, 0, 0, 0, 0, 0, 0, 0]
+];
+
+
+//아이템 이름, hp, pa, ma, pd, md, ar, ct, cd, av, 세트이름
+var item=[["미선택", "0", "0", "0", "0", "0", "0", "0", "0", "0", ""],
+["나무 단검", 		"0", "2", "0", "0", "0", "1", "0", "0", "0", "나무"],
+["나무 지팡이", 		"0", "0", "4", "0", "0", "0", "0", "3", "0", "나무"],
+["나무 방패", 		"0", "0", "0", "2", "0", "0", "0", "0", "0", "나무"],
+["나무 투구", 		"0", "0", "0", "1", "1", "0", "0", "0", "0", "나무"],
+["나무 갑옷", 		"0", "0", "0", "2", "0", "0", "0", "0", "0", "나무"],
+["나무 신발", 		"0", "0", "0", "1", "0", "0", "0", "0", "1", "나무"],
+["나무 장갑", 		"0", "0", "0", "1", "0", "0", "0", "3", "0", "나무"],
+["숙련자 나무 단검", 	"0", "5", "0", "0", "0", "1", "0", "0", "0", "숙련자"],
+["숙련자 나무 지팡이", 	"0", "0", "7", "0", "0", "0", "0", "4", "0", "숙련자"],
+["숙련자 나무 방패", 	"0", "0", "0", "5", "0", "0", "0", "0", "0", "숙련자"],
+["숙련자 나무 투구", 	"0", "0", "0", "3", "3", "0", "0", "0", "0", "숙련자"],
+["숙련자 나무 갑옷", 	"0", "0", "0", "5", "0", "0", "0", "0", "0", "숙련자"],
+["숙련자 나무 신발", 	"0", "0", "0", "2", "0", "0", "0", "0", "2", "숙련자"],
+["숙련자 나무 장갑", 	"0", "0", "0", "2", "0", "0", "0", "5", "0", "숙련자"],
+["청동 장검", 		"0", "5", "0", "0", "0", "0", "0", "0", "0", "청동"],
+["청동 지팡이", 		"0", "0", "6", "0", "0", "0", "-1", "0", "0", "청동"],
+["청동 봉", 		"0", "0", "3", "0", "0", "0", "0", "0", "0", "청동"],
+["청동 투구", 		"0", "0", "0", "0", "2", "0", "0", "0", "0", "청동"],
+["청동 갑옷", 		"0", "0", "0", "1", "4", "-1", "0", "0", "0", "청동"],
+["청동 신발", 		"0", "0", "0", "0", "2", "0", "0", "1", "0", "청동"],
+["청동 장갑", 		"0", "0", "0", "1", "1", "0", "0", "0", "0", "청동"],
+["철제단검", 		"0", "4", "0", "0", "0", "1", "0", "0", "0", "철제"],
+["철제장검", 		"0", "7", "0", "0", "0", "0", "0", "0", "-1", "철제"],
+["철제투구", 		"0", "0", "0", "2", "2", "0", "0", "0", "-1", "철제"],
+["철제경갑", 		"0", "0", "0", "3", "3", "0", "0", "0", "-1", "철제"],
+["철제중갑", 		"0", "0", "0", "4", "4", "0", "0", "0", "-1", "철제"],
+["철제장갑", 		"0", "1", "0", "2", "0", "0", "0", "0", "-1", "철제"],
+["철제신발", 		"0", "0", "0", "2", "2", "0", "0", "0", "-1", "철제"],
+["강철검", 		"0", "11", "0", "1", "0", "0", "0", "0", "-1", "강철"],
+["강철방패", 		"0", "0", "0", "5", "5", "0", "0", "0", "-2", "강철"],
+["강철투구", 		"0", "0", "0", "3.5", "3.5", "0", "0", "0", "-2", "강철"],
+["강철갑옷", 		"0", "0", "0", "7", "7", "0", "0", "0", "-3", "강철"],
+["강철장갑", 		"0", "0", "0", "3", "3", "0", "0", "0", "-2", "강철"],
+["강철신발", 		"0", "0", "0", "3.5", "3.5", "0", "0", "0", "-2", "강철"],
+["장인 철검", 		"0", "8", "0", "0", "0", "0", "2", "0", "1", "장인"],
+["장인 철검집", 		"0", "4", "0", "0", "0", "0", "2", "0", "0", "장인"],
+["장인 철두건", 		"0", "0", "0", "3", "3", "0", "2", "0", "0", "장인"],
+["장인 철환", 		"0", "3", "0", "2", "2", "0", "0", "0", "0", "장인"],
+["장인 철가락지", 		"0", "5", "0", "0", "0", "0", "2", "0", "0", "장인"],
+["장인 철신발", 		"0", "0", "0", "2", "2", "0", "1", "0", "0", "장인"],
+["금 목걸이", 		"0", "12", "12", "0", "0", "0", "0", "0", "0", "금"],
+["금 반지", 		"0", "8", "8", "0", "0", "0", "0", "0", "0", "금"],
+["초급 마법서", 		"0", "0", "6", "0", "2", "1", "0", "0", "0", "초급 마법사"],
+["비둘기 모자", 		"0", "0", "5", "0", "2", "0", "0", "0", "0", "초급 마법사"],
+["마법사 망토", 		"0", "0", "4", "1", "5", "0", "0", "0", "0", "초급 마법사"],
+["청은 반지", 		"0", "-4", "4", "0", "5", "0", "0", "0", "0", "초급 마법사"],
+["엘프 지팡이", 		"0", "0", "11", "3", "5", "1", "0", "0", "0", "중급 마법사"],
+["거뭇한 구슬", 		"0", "0", "13", "0", "3", "1", "0", "5", "0", "중급 마법사"],
+["왕국대마도사 수정구", 		"0", "0", "15", "0", "0", "0", "0", "0", "0", "중급 마법사"],
+["염원의 목걸이", 		"0", "-5", "15", "-5", "-5", "0", "0", "0", "0", "중급 마법사"],
+["드레이크 목걸이", 		"-3", "0", "20", "-5", "5", "0", "0", "0", "-3", "중급 마법사"],
+["아크리치 망토", 		"0", "0", "12", "3", "5", "0", "0", "0", "-5", "중급 마법사"],
+["거뭇한 장갑", 		"0", "0", "5", "1", "1", "1", "0", "5", "0", "중급 마법사"],
+["지능의 반지Ⅰ", 		"0", "0", "5", "0", "0", "0", "0", "0", "0", "중급 마법사"],
+["틀어진 살수장검", 		"0", "7", "0", "0", "0", "0", "-2", "0", "0", "틀어진"],
+["틀어진 살수단검", 		"0", "3", "0", "0", "0", "0", "-2", "2", "0", "틀어진"],
+["틀어진 살수복면", 		"0", "4", "0", "0", "0", "0", "-3", "0", "0", "틀어진"],
+["틀어진 살수목걸이", 		"0", "1", "0", "0", "0", "0", "-3", "2", "0", "틀어진"],
+["틀어진 살수야행복", 		"0", "3", "0", "3", "3", "0", "0", "0", "0", "틀어진"],
+["틀어진 살수장갑", 		"0", "3", "0", "0", "0", "0", "-2", "0", "0", "틀어진"],
+["틀어진 살수반지", 		"0", "1", "0", "0", "0", "0", "-2", "3", "0", "틀어진"],
+["틀어진 살수신발", 		"0", "0", "0", "0", "0", "2", "-4", "0", "0", "틀어진"],
+["살수장검", 		"0", "14", "0", "0", "0", "1", "-4", "0", "0", "살수"],
+["살수단검", 		"0", "5", "0", "0", "0", "2", "-5", "0", "0", "살수"],
+["살수복면", 		"0", "5", "0", "0", "0", "0", "-2", "3", "0", "살수"],
+["살수목걸이", 		"0", "7", "0", "0", "0", "0", "-3", "9", "0", "살수"],
+["살수야행복", 		"0", "7", "0", "4", "4", "0", "-3", "0", "2", "살수"],
+["살수장갑", 		"0", "5", "0", "0", "0", "2", "-5", "0", "0", "살수"],
+["살수반지", 		"0", "5", "0", "0", "0", "0", "-4", "9", "0", "살수"],
+["살수신발", 		"0", "3", "0", "0", "0", 0, "-3", "0", "2", "살수"],
+["잿빛 장검", 		"0", "19", "0", "0", "0", "2", "-3", "10", "0", "잿빛"],
+["잿빛 단검", 		"0", "8", "0", "0", "0", "3", "-3", "5", "0", "잿빛"],
+["잿빛 복면", 		"0", "0", "0", "0", "0", "0", "-3", "5", "3", "잿빛"],
+["잿빛 목걸이", 		"0", "11", "0", "0", "0", "0", "-3", "10", "3", "잿빛"],
+["잿빛 야행복", 		"0", "11", "0", "3", "3", "0", "-5", "0", "5", "잿빛"],
+["잿빛 장갑", 		"0", "11", "0", "0", "0", "2", "-5", "10", "0", "잿빛"],
+["잿빛 반지", 		"0", "9", "0", "0", "0", "0", "-4", "13", "0", "잿빛"],
+["잿빛 신발", 		"0", "7", "0", "0", "0", "0", "-4", "5", "5", "잿빛"],
+["어둑한 장검", 		"0", "40", "0", "0", "0", "3", "-5", "20", "0", "어둑한"],
+["어둑한 단검", 		"0", "10", "0", "0", "0", "2", "-5", "15", "0", "어둑한"],
+["어둑한 복면", 		"0", "0", "0", "4", "4", "0", "-5", "10", "0", "어둑한"],
+["어둑한 목걸이", 		"0", "20", "0", "0", "0", "0", "-5", "13", "0", "어둑한"],
+["어둑한 야행복", 		"0", "20", "0", "6", "6", "0", "-5", "7", "0", "어둑한"],
+["어둑한 장갑", 		"0", "10", "0", "3", "3", "0", "-5", "10", "0", "어둑한"],
+["어둑한 반지", 		"0", "10", "0", "0", "0", "0", "-5", "10", "5", "어둑한"],
+["어둑한 신발", 		"0", "0", "0", "0", "0", "3", "-5", "5", "5", "어둑한"],
+["어둑한 팔찌", 		"0", "4", "0", "0", "0", "1", "-4", "2", "0", "어둑한"],
+["심연의 살수장검", 		"0", "48", "0", "0", "0", "2", "-5", "32", "0", "심연"],
+["심연의 살수단검", 		"0", "27", "0", "0", "0", "1", "-5", "17", "0", "심연"],
+["심연의 살수복면", 		"0", "10", "0", "1", "1", "0", "-5", "11", "3", "심연"],
+["심연의 살수목걸이", 		"5", "30", "0", "0", "0", "0", "-5", "10", "3", "심연"],
+["심연의 살수야행복", 		"10", "15", "0", "7", "7", "0", "-5", "15", "3", "심연"],
+["심연의 살수장갑", 		"0", "15", "0", "1", "1", "0", "-5", "11", "3", "심연"],
+["심연의 살수반지", 		"0", "15", "0", "0", "0", "0", "-5", "20", "0", "심연"],
+["심연의 살수신발", 		"0", "10", "0", "1", "1", "0", "-5", "11", "3", "심연"],
+["심연의 살수팔찌", 		"0", "5", "0", "0", "0", "1", "-5", "5", "0", "심연"],
+["모조엘프 활", 		"0", "-3", "-3", "0", "0", "1.5", "4", "9", "0", "초급 궁수"],
+["모조엘프 화살", 		"0", "-1", "-1", "0", "0", "1.5", "2", "3", "0", "초급 궁수"],
+["치명의 반지Ⅰ", 		"0", "0", "0", "0", "0", "0", "2.5", "0", "0", "초급 궁수"],
+["엘프 활", 		"0", "-4", "-4", "0", "0", "2", "5", "11", "0", "중급 궁수"],
+["엘프 화살", 		"0", "-2", "-2", "0", "0", "2", "3", "6", "0", "중급 궁수"],
+["하얀날개 신발", 		"0", "0", "0", "2", "2", "1", "3", "0", "3", "중급 궁수"],
+["크라켄의 활", 		"5", "-16", "-16", "0", "0", "3", "10", "23", "0", "상급 궁수"],
+["크라켄의 화살", 		"5", "-10", "-10", "0", "0", "3", "6", "13", "0", "상급 궁수"],
+["회색날개 옷", 		"0", "0", "0", "5", "5", "0", "5", "10", "5", "상급 궁수"],
+["회색 날개 신발", 		"0", "0", "0", "3", "3", "2", "4", "0", "4", "상급 궁수"],
+["산뜻한 직물 조끼", 		"12", "0", "0", "7", "7", "0", "0", "0", "0", "오지"],
+["질긴 가죽 장갑", 		"0", "3", "3", "3", "3", "0", "0", "3", "0", "오지"],
+["야생화 반지", 		"5", "0", "0", "0", "0", "0", "3", "5", "0", "오지"],
+["가시돋친 선인장 망치", 		"10", "15", "15", "0", "0", "0", "0", "15", "-5", "오지"],
+["여우 털 터번", 		"5", "0", "0", "2", "2", "1", "2", "0", "0", "오지"],
+["살무사 가죽 팔찌", 		"3", "0", "0", "0", "0", "0", "0", "3", "-2", "오지"],
+["조잡한 털 뭉치", 		"15", "-6", "-6", "0", "0", "3", "0", "10", "0", "오지"],
+["얼음 결정 목걸이", 		"10", "-9", "-9", "7", "7", "0", "5", "0", "0", "오지"],
+["곰 발바닥 신발", 		"5", "0", "0", "4", "4", "0", "0", "5", "-2", "오지"],
+["검은 칼", 		"0", "16", "0", "-3", "-3", "2", "0", "0", "0", "검은"],
+["검은 지팡이", 		"-5", "22", "0", "0", "0", "2", "0", "0", "0", "검은"],
+["검은 활", 		"0", "-6", "-6", "0", "0", "3", "7", "16", "-5", "검은"],
+["검은 목걸이", 		"10", "20", "20", "0", "0", "3", "0", "0", "5", "검은"],
+["검은 옷", 		"0", "12", "0", "7", "7", "0", "0", "0", "-5", "검은"],
+["검은 망토", 		"0", "0", "12", "7", "7", "0", "0", "0", "-5", "검은"],
+["검은 장갑", 		"-5", "10", "0", "6", "6", "2", "0", "0", "0", "검은"],
+["검은 탈리스만", 		"-5", "0", "15", "0", "0", "2", "3", "0", "0", "검은"],
+["검은 반지", 		"0", "7", "7", "0", "0", "0", "3", "0", "-3", "검은"],
+["검은 귀걸이", 		"-5", "0", "13", "0", "0", "0", "3", "0", "0", "검은"],
+["검은 가면", 		"-5", "9", "0", "3", "3", "0", "0", "0", "0", "검은"],
+["네크로리콘", 		"-5", "0", "14", "0", "-3", "1.5", "3", "0", "2", "검은"],
+["검은 방패", 		"15", "8", "8", "0", "0", "0", "0", "0", "-3", "검은"],
+["검은 독고저", 		"-3", "21", "0", "0", "0", "2", "0", "9", "0", "검은"],
+["검은 마도서", 		"-3", "18", "0", "0", "0", "3", "5", "0", "0", "검은"],
+["용아장", 		"5", "0", "40", "0", "0", "2", "10", "0", "0", "용"],
+["용아검", 		"10", "35", "0", "0", "0", "3", "5", "20", "0", "용"],
+["용린선", 		"20", "0", "50", "0", "0", "3", "5", "25", "0", "용"],
+["용화극", 		"20", "50", "0", "0", "0", "3", "5", "25", "0", "용"],
+["용피갑", 		"10", "7", "7", "15", "15", "0", "0", "0", "0", "용"],
+["용 가죽 장갑", 		"0", "9", "9", "7", "7", "2.5", "0", "0", "0", "용"],
+["용 비늘 투구", 		"9", "9", "9", "9", "9", "0", "0", "0", "0", "용"],
+["용 날개 신발", 		"0", "0", "0", "5", "5", "2.5", "5", "0", "5", "용"],
+["용혼경", 		"24", "25", "25", "0", "0", "0", "0", "0", "6", "용"],
+["불길한 커틀러스", 		"10", "0", "0", "0", "0", "-3", "0", "30", "0", "이성"],
+["요동치는 생명의 비밀", 		"10", "0", "0", "2", "2", "0", "5", "0", "0", "이성"],
+["흐름의 관찰자", 		"12", "6", "6", "12", "12", "0", "0", "0", "0", "흐름"],
+["흐름잡이", 		"18", "9", "9", "18", "18", "0", "0", "0", "0", "흐름"],
+["흐름밟이", 		"5", "0", "0", "5", "5", "5", "5", "0", "5", "흐름"],
+["방벽의 눈", 		"16", "2", "2", "16", "16", "-2", "0", "0", "-2.5", "방벽"],
+["방벽의 심장", 		"22", "5", "5", "22", "22", "-2", "0", "0", "-2.5", "방벽"],
+["방벽의 발걸음", 		"14", "0", "0", "7", "7", "3", "5", "0", "0", "방벽"],
+["파괴의 근원", 		"18", "42", "0", "0", "0", "0", "3", "15", "0", "파괴"],
+["파괴의 잔해", 		"0", "20", "0", "0", "0", "0", "3", "13", "0", "파괴"],
+["파괴의 증거", 		"6", "6", "0", "5", "5", "2", "3", "0", "0", "파괴"],
+["마력의 심장", 		"15", "0", "45", "0", "0", "0", "5", "12", "0", "마력"],
+["마력의 흔적", 		"0", "0", "23", "0", "0", "0", "5", "8", "0", "마력"],
+["마력의 속삭임", 		"5", "0", "5", "3.5", "3.5", "2", "5", "0", "0", "마력"],
+["종말의 계시", 		"0", "80", "0", "0", "0", "3", "6", "45", "0", "종말"],
+["종말의 환영", 		"0", "20", "0", "0", "0", "1.5", "3", "20", "0", "종말"],
+["종말의 손", 		"0", "15", "0", "5", "5", "2.5", "0", "15", "0", "종말"],
+["반역의 목소리", 		"0", "0", "75", "0", "0", "4", "9", "38", "0", "반역"],
+["반역의 날개", 		"0", "0", "28", "0", "0", "2", "5", "12", "0", "반역"],
+["반역의 분노", 		"0", "0", "20", "5", "5", "3", "3", "6", "0", "반역"],
+["대현자의 머리띠", 		"12", "15", "15", "5", "5", "3", "5", "0", "0", "대현자"],
+["대현자의 목걸이", 		"20", "40", "40", "0", "0", "2", "15", "30", "-15", "대현자"],
+["대현자의 반지", 		"-17", "-25", "-25", "-11", "-11", "-5", "-20", "-40", "-15", "대현자"],
+["멸천제륜", 		"10", "15", "15", "5", "5", "1", "10", "30", "15", "대현자"],
+["허상의 구슬", 		"25", "0", "0", "0", "0", "0", "20", "65", "0", "환영"],
+["허무의 팔찌", 		"10", "0", "0", "0", "0", "3", "10", "10", "0", "환영"],
+["수제 만능 요리도구", 		"30", "0", "0", "0", "0", "0", "25", "100", "-10", "수제품"],
+["수제 만능 사냥도구", 		"30", "0", "0", "0", "0", "0", "25", "100", "10", "수제품"],
+["수제 도시락", 		"20", "0", "0", "0", "0", "0", "10", "20", "-7", "수제품"],
+["수제 미인주", 		"20", "0", "0", "0", "0", "0", "5", "30", "7", "수제품"],
+["수제 구슬 팔찌", 		"15", "0", "0", "5", "5", "5", "10", "15", "0", "수제품"],
+["근력의 반지Ⅰ", 		"0", "5", "0", "0", "0", "0", "0", "0", "0", ""],
+["기민의 반지Ⅰ", 		"0", "-5", "-5", "0", "0", "2", "0", "0", "0", ""],
+["생명의 반지Ⅰ", 		"7", "0", "0", "0", "0", "0", "0", "0", "0", ""],
+["회피의 반지Ⅰ", 		"0", "0", "0", "0", "0", "0", "0", "0", "2.5", ""],
+["근력의 반지Ⅱ", 		"0", "7", "0", "0", "0", "0", "0", "0", "0", ""],
+["기민의 반지Ⅱ", 		"0", "-5", "-5", "0", "0", "3", "0", "0", "0", ""],
+["지능의 반지Ⅱ", 		"0", "0", "7", "0", "0", "0", "0", "0", "0", ""],
+["생명의 반지Ⅱ", 		"10", "0", "0", "0", "0", "0", "0", "0", "0", ""],
+["치명의 반지Ⅱ", 		"0", "0", "0", "0", "0", "0", "4", "0", "0", ""],
+["회피의 반지Ⅱ", 		"0", "0", "0", "0", "0", "0", "0", "0", "3", ""],
+["나무팔찌", 		"0", "1", "1", "0", "0", "0", "0", "0", "0", ""],
+["청동팔찌", 		"1", "2", "2", "0", "0", "0", "0", "0", "0", ""],
+["철제팔찌", 		"0", "0", "0", "1", "1", "0", "0", "0", "-1", ""],
+["강철팔찌", 		"0", "0", "0", "2", "2", "0", "0", "0", "1", ""],
+["운철팔찌", 		"2", "0", "0", "2", "2", "0", "0", "0", "0", ""],
+["금강팔찌", 		"5", "0", "0", "2.5", "2.5", "0", "0", "0", "0", ""],
+["닳아빠진 짚신", 		"0", "0", "0", "-1.5", "-1.5", "1.5", "0", "0", "1.5", ""],
+["삼류 권법서", 		"0", "3", "0", "0", "0", "1", "0", "0", "0", ""],
+["늑대 발톱 목걸이", 		"0", "5", "0", "0", "2", "0", "0", "0", "0", ""],
+["범가죽 흉갑", 		"0", "1", "0", "3", "3", "0", "0", "0", "0", ""],
+["토끼 인형 탈", 		"0", "0", "0", "1", "1", "0", "0", "0", "3", ""],
+["임시 방화모", 		"0", "0", "0", "3", "1", "0", "0", "0", "1", ""],
+["날카로운 뼈", 		"0", "4", "0", "0", "0", "1", "0", "0", "1", ""],
+["붉은단검", 		"0", "6", "0", "0", "0", "1.5", "0", "0", "0", ""],
+["붉은장검", 		"0", "9", "0", "0", "0", "1", "0", "0", "-1", ""],
+["오우거 가죽갑옷", 		"0", "3", "0", "5", "5", "0", "0", "0", "0", ""],
+["오우거 장갑", 		"3", "5", "0", "3", "3", "1", "0", "0", "0", ""],
+["친위대 제복", 		"0", "7", "0", "3", "3", "0", "0", "0", "3", ""],
+["친위대장의 투구", 		"0", "3", "0", "3", "3", "0", "0", "0", "0", ""],
+["왕국 국새", 		"10", "10", "10", "0", "0", "0", "0", "0", "5", ""],
+["톨라리안 몽둥이", 		"0", "25", "25", "0", "0", "-1", "0", "0", "7", ""],
+["조로아스터 경전", 		"0", "2", "2", "0", "0", "0.5", "2", "0", "0", ""],
+["복음의 풍요", 		"15", "15", "15", "6", "6", "1.5", "0", "0", "3", ""],
+["복음의 전파", 		"0", "15", "15", "5", "5", "1.5", "3", "9", "0", ""],
+["은빛 사냥 도구", 		"5", "-2", "-2", "0", "0", "0", "5", "0", "0", ""],
+["여우 귀 장식", 		"0", "-1", "-1", "0", "0", "0", "2", "0", "1", ""],
+["뼈 지팡이", 		"0", "0", "8", "0", "-3", "0", "0", "0", "0", ""],
+["오크식 비키니", 		"0", "0", "0", "0", "5", "0", "0", "0", "5", ""],
+["사이클롭스 방망이", 		"0", "30", "0", "0", "0", "-1", "0", "0", "-5", ""],
+["외눈목걸이", 		"0", "10", "0", "3", "3", "0", "0", "0", "0", ""],
+["아크리치 수정구", 		"5", "0", "27", "-5", "-5", "0", "0", "0", "0", ""],
+["타락한 용의 반지", 		"8", "10", "10", "0", "0", "0", "3", "6", "0", ""],
+["레플리카 궁니르", 		"0", "-45", "-45", "0", "0", "2", "15", "75", "0", ""],
+["복원한 드라우프니르", 		"12", "0", "0", "3", "3", "0", "0", "0", "3", ""],
+["소드위치 디아나", 		"15", "0", "0", "0", "0", "1", "0", "0", "0", ""],
+["소드위치 샤트레아", 		"10", "0", "0", "0", "0", "2", "0", "0", "0", ""],
+["2주년 기념 팔찌", 		"2", "2", "2", "2", "2", "2", "2", "2", "2", ""],
+["4주년 기념 물안경", 		"0", "0", "0", "0", "0", "0", "7", "0", "0", "4주년"],
+["4주년 기념 수영복", 		"0", "0", "0", "0", "0", "5", "0", "0", "0", "4주년"],
+["4주년 기념 오리발", 		"0", "0", "0", "0", "0", "0", "0", "0", "6", "4주년"],
+["자아를 가진 검", 		"-20", "-10", "-10", "0", "0", "-2", "-2", "-15", "0", "각성"],
+["침묵을 부르는 팔찌", 		"0", "0", "0", "0", "0", "1.5", "-2", "0", "0", "각성"],
+["산타복을 입은 디아나", 		"15", "0", "0", "0", "0", "1", "0", "0", "0", ""],
+["산타복을 입은 샤트레아", 		"10", "0", "0", "0", "0", "2", "0", "0", "0", ""],
+["Santa ClauSword", 		"15", "0", "0", "5.5", "5.5", "3", "0", "20", "0", "Santa"],
+["Santa ClothArmor", 		"7", "0", "0", "9.5", "9.5", "0", "0", "0", "0", "Santa"],
+["Santa CrossGuard", 		"10", "0", "0", "6", "6", "2", "0", "10", "0", "Santa"],
+["Santa ClawsFist", 		"5", "0", "0", "4", "4", "2", "0", "0", "0", "Santa"],
+["마영보구", 		"0", "0", "14", "0", "5", "1", "3", "3", "0", "상급 마법사"],
+["톨라리안 마법서", 		"6", "0", "9", "0", "0", "0", "0", "7", "3", "상급 마법사"],
+["마나의 목걸이", 		"5", "0", "13", "0", "3", "0", "2", "0", "0", "상급 마법사"],
+["마법사의 신발", 		"0", "0", "7", "3", "3", "2", "0", "0", "3", "상급 마법사"],
+
+];
+
+function ch_w(id){
+
+//세트 효과 계산용, hp, pa, ma, pd, md, ar, ct, cd, av, str, agi, wis
+var setEffect=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+var sum=[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+//장착한 아이템의 세트 효과를 계산하기 위한 배열을 초기화
+var set=[{name:"나무", value:0}, {name:"숙련자", value:0}, {name:"청동", value:0}, {name:"철제", value:0},
+{name:"강철", value:0}, {name:"장인", value:0}, {name:"금", value:0}, {name:"초급 마법사", value:0},
+{name:"중급 마법사", value:0}, {name:"상급 마법사", value:0}, {name:"틀어진", value:0}, {name:"살수", value:0},
+{name:"잿빛", value:0}, {name:"어둑한", value:0}, {name:"심연", value:0}, {name:"초급 궁수", value:0},
+{name:"중급 궁수", value:0}, {name:"상급 궁수", value:0}, {name:"오지", value:0}, {name:"검은", value:0},
+{name:"용", value:0}, {name:"이성", value:0}, {name:"흐름", value:0}, {name:"방벽", value:0},
+{name:"파괴", value:0}, {name:"마력", value:0}, {name:"종말", value:0}, {name:"반역", value:0},
+{name:"대현자", value:0}, {name:"환영", value:0}, {name:"수제품", value:0}, {name:"4주년", value:0},
+{name:"각성", value:0}, {name:"santa", value:0}
+];
+	var changeEquip=document.getElementById(id);
+	var optionTxt=changeEquip.options[changeEquip.selectedIndex].text;
+
+
+	var rows =  document.getElementById("tbody").getElementsByTagName("tr");
+	var cells;
+	var tmp=null;
+
+	//선택된 장비의 text를 item의 이름과 비교
+	//switch문으로 해당 item의 10열의 값(세트 이름)을 equipment의 해당 열에 저장
+	//변경할 행을 cells에 저장
+	//for문으로 cells의 열에 item의 능력치 입력
+	for(var i=0; i<item.length; i++){
+		if(item[i][0]===optionTxt){
+			switch(id){
+			case "weapon":
+				tmp=0;
+				break;
+			case "secondary":
+				tmp=1;
+				break;
+			case "head":
+				tmp=2;
+				break;
+			case "necklace":
+				tmp=3;
+				break;
+			case "armor":
+				tmp=4;
+				break;
+			case "gloves":
+				tmp=5;
+				break;
+			case "ring":
+				tmp=6;
+				break;
+			case "shoes":
+				tmp=7;
+				break;
+			case "bracelet":
+				tmp=8;
+				break;
+			}
+			cells=rows[tmp].getElementsByTagName("td");
+			equipment[tmp][0]=item[i][10];
+			for(var j=1; j<equipment[0].length; j++){
+				equipment[tmp][j]=item[i][j];
+				cells[j-1].innerHTML= "<td>0<div><button onclick=range("+tmp+","+i+","+j+","+"-20)>-20%</button><button onclick=range("+tmp+","+i+","+j+","+"20)>+20%</button></div></td>";
+				cells[j-1].firstChild.data=item[i][j];
+				
+			}
+		}
+		if(tmp!=null){
+			break;
+		}
+	}
+     
+	//세트 개수 구하기
+	for(var i=0; i<equipment.length; i++){
+		for(var j=0; j<set.length; j++){
+			if(i==0){
+			if(equipment[i]==["각성", "-20", "-10", "-10", "0", "0", "-2", "-2", "-15", "0"].toString()){
+				set[j].value++;
+				continue;
+			}else set[j].value=0;
+			}
+			if(equipment[i][0]==set[j].name) set[j].value++;
+		}
+	}
+
+	//세트 이름과 개수 저장
+	tmp="";
+
+	//세트 효과 합산
+	for(var i=0; i<set.length; i++){
+
+		if(set[i].value<2){}
+		else{
+			switch(set[i].name) {
+			case "나무":
+				if(set[i].value>=6) setEffect[0]+=10;
+				if(set[i].value>=4){
+					setEffect[5] +=2;
+					setEffect[8] +=3;
+				}
+				setEffect[1] +=1;
+				setEffect[2] +=1;
+				break;
+			case "숙련자":
+				if(set[i].value>=6) setEffect[0]+=15;
+				if(set[i].value>=4){
+					setEffect[5] +=4;
+					setEffect[8] +=5;
+				}
+				setEffect[1] +=2;
+				setEffect[2] +=2;
+				break;
+			case "청동":
+				if(set[i].value>=6) {
+					setEffect[0]+=10;
+					setEffect[6]+=3;
+				}
+				if(set[i].value>=4){
+					setEffect[3] +=3;
+					setEffect[4] +=3;
+				}
+				setEffect[1] +=2;
+				setEffect[2] +=2;
+				break;
+			case "철제":
+				if(set[i].value>=5) {
+					setEffect[8]+=5;
+					setEffect[6]+=5;
+				}
+				if(set[i].value>=4){
+					setEffect[1] +=5;
+					setEffect[2] +=5;
+				}
+				setEffect[3] +=4;
+				setEffect[4] +=4;
+				break;
+			case "강철":
+				if(set[i].value>=6) {
+					setEffect[0]+=15;
+					setEffect[8]+=2;
+				}
+				if(set[i].value>=4){
+					setEffect[1] +=4;
+					setEffect[3] +=4;
+					setEffect[4] +=4;
+				}
+				setEffect[1] +=3;
+				break;
+			case "장인":
+				if(set[i].value>=6) {
+					setEffect[0]+=10;
+					setEffect[8]+=5;
+				}
+				if(set[i].value>=4){
+					setEffect[6] +=5;
+					setEffect[3] +=4;
+					setEffect[4] +=4;
+				}
+				setEffect[1] +=6;
+				break;
+			case "금":
+				setEffect[1] +=5;
+				setEffect[2] +=5;
+				break;
+			case "초급 마법사":
+				if(set[i].value>=4) {
+					setEffect[0]+=5;
+					setEffect[2]+=3;
+				}
+				if(set[i].value>=3){
+					setEffect[6] +=3;
+				}
+				setEffect[2] +=5;
+				break;
+			case "중급 마법사":
+				if(set[i].value>=4) {
+					setEffect[0]+=10;
+					setEffect[2]+=15;
+					setEffect[8]+=5;
+				}
+				if(set[i].value>=3){
+					setEffect[6] +=5;
+					setEffect[2] +=5;
+				}
+				setEffect[2] +=10;
+				break;
+			case "상급 마법사":
+				if(set[i].value>=4) {
+					setEffect[0]+=5;
+					setEffect[2]+=25;
+				}
+				if(set[i].value>=3){
+					setEffect[0] +=15;
+					setEffect[2] +=20;
+				}
+				setEffect[2] +=10;
+				setEffect[6] +=8;
+				break;
+			case "틀어진":
+				if(set[i].value>= 8){
+					setEffect[5]+=1;
+					setEffect[1]+=5;
+				}
+				if(set[i].value>=7){
+					setEffect[3] +=4;
+					setEffect[4] +=4;
+				}
+				if(set[i].value>=6){
+					setEffect[8]+=3;
+					setEffect[0]+=5;
+				}
+				if(set[i].value>=4){
+					setEffect[7] +=3;
+					setEffect[1] +=3;
+				}
+				setEffect[7] +=3;
+				break;
+			case "살수":
+				if(set[i].value>=8){
+					setEffect[5]+=2;
+					setEffect[1]+=15;
+				}
+				if(set[i].value>=7){
+					setEffect[3] +=8;
+					setEffect[4] +=8;
+				}
+				if(set[i].value>=6){
+					setEffect[8]+=5;
+					setEffect[0]+=10;
+				}
+				if(set[i].value>=4){
+					setEffect[6] +=-5;
+					setEffect[1] +=5;
+				}
+				setEffect[7] +=10;
+				break;
+			case "잿빛":
+				if(set[i].value>= 8){
+					setEffect[5]+=2.5;
+					setEffect[7]+=25;
+				}
+				if(set[i].value>=7){
+					setEffect[1] +=5;
+					setEffect[7] +=15;
+					setEffect[0] +=15;
+				}
+				if(set[i].value>=6){
+					setEffect[8]+=5;
+					setEffect[1]+=10;
+				}
+				if(set[i].value>=5){
+					setEffect[0]+=15;
+				}
+				if(set[i].value>=4){
+					setEffect[6] +=-5;
+					setEffect[1] +=10;
+				}
+				setEffect[7] +=15;
+				break;
+			case "어둑한":
+				if(set[i].value>= 9){
+					setEffect[0]+=7;
+					setEffect[1]+=11;
+					setEffect[6]+=-9;
+					setEffect[7]+=5;
+					setEffect[8]+=4;
+				}
+				if(set[i].value>=8){
+					setEffect[0]+=20;
+					setEffect[1]+=20;
+					setEffect[5]+=2.5;
+					setEffect[7]+=29;
+				}
+				if(set[i].value>=6){
+					setEffect[0]+=10;
+					setEffect[1]+=10;
+					setEffect[7]+=16;
+					setEffect[8]+=5;
+				}
+				if(set[i].value>=4){
+					setEffect[0]+=5;
+					setEffect[3]+=2;
+					setEffect[4]+=2;
+					setEffect[7]+=10;
+					setEffect[8]+=2;
+				}
+				setEffect[0]+=5;
+				setEffect[1]+=5;
+				setEffect[7]+=5;
+				setEffect[8]+=3;
+				break;
+			case "심연":
+				if(set[i].value>= 9){
+					setEffect[0]+=20;
+					setEffect[1]+=15;
+					setEffect[5]+=1;
+					setEffect[6]+=-2;
+					setEffect[7]+=15;
+					setEffect[8]+=2.5;
+				}
+				if(set[i].value>=8){
+					setEffect[0]+=10;
+					setEffect[1]+=10;
+					setEffect[5]+=1;
+					setEffect[6]+=-1;
+					setEffect[7]+=15;
+					setEffect[8]+=2.5;
+				}
+				if(set[i].value>=6){
+					setEffect[0]+=15;
+					setEffect[1]+=15;
+					setEffect[5]+=1;
+					setEffect[6]+=-2;
+					setEffect[7]+=10;
+					setEffect[8]+=2.5;
+				}
+				if(set[i].value>=5){
+					setEffect[0]+=5;
+					setEffect[1]+=10;
+					setEffect[5]+=1;
+					setEffect[6]+=-1;
+					setEffect[7]+=10;
+					setEffect[8]+=2.5;
+				}
+				if(set[i].value>=3){
+					setEffect[0]+=10;
+					setEffect[1]+=10;
+					setEffect[5]+=1;
+					setEffect[6]+=-1;
+					setEffect[7]+=10;
+					setEffect[8]+=2.5;
+				}
+				setEffect[0]+=5;
+				setEffect[1]+=5;
+				setEffect[5]+=1;
+				setEffect[6]+=-1;
+				setEffect[7]+=10;
+				setEffect[8]+=2.5;
+				break;
+			case "초급 궁수":
+				if(set[i].value>=3){
+					setEffect[6] +=5;
+					setEffect[8] +=3;
+				}
+				setEffect[7] +=10;
+				break;
+			case "중급 궁수":
+				if(set[i].value>=3){
+					setEffect[5] +=2;
+					setEffect[6] +=5;
+					setEffect[8] +=3;
+				}
+				setEffect[7] +=15;
+				break;
+			case "상급 궁수":
+				if(set[i].value>=4){
+					setEffect[0] +=10;
+					setEffect[7] +=15;
+				}
+				if(set[i].value>=3){
+					setEffect[5] +=1;
+					setEffect[6] +=10;
+					setEffect[8] +=5;
+				}
+				setEffect[7] +=20;
+				break;
+			case "오지":
+				if(set[i].value>=9){
+					setEffect[1] +=-18;
+					setEffect[2] +=-18;
+					setEffect[8] +=-7;
+					setEffect[9] +=2;
+					setEffect[10] +=2;
+					setEffect[11] +=2;
+				}
+				if(set[i].value>=6){
+					setEffect[3] +=7;
+					setEffect[4] +=7;
+					setEffect[0] +=10;
+					setEffect[5] +=2;
+				}
+				if(set[i].value>=3){
+					setEffect[1] +=4;
+					setEffect[2] +=4;
+					setEffect[7] +=10;
+				}
+				break;
+			case "검은":
+				if(set[i].value>= 6){
+					setEffect[1]+=7;
+					setEffect[2]+=7;
+					setEffect[8]+=3;
+				}
+				if(set[i].value>=5){
+					setEffect[0]+=15;
+					setEffect[1]+=5;
+					setEffect[2]+=5;
+				}
+				if(set[i].value>=4){
+					setEffect[5]+=2.5;
+					setEffect[7]+=20;
+				}
+				if(set[i].value>=3){
+					setEffect[0]+=20;
+					setEffect[6]+=5;
+				}
+				setEffect[1]+=7;
+				setEffect[2]+=7;
+				break;
+			case "용":
+				if(set[i].value>= 6){
+					setEffect[3]+=9;
+					setEffect[4]+=9;
+					setEffect[7]+=10;
+				}
+				if(set[i].value>=5){
+					setEffect[1]+=5;
+					setEffect[2]+=5;
+					setEffect[8]+=7;
+				}
+				if(set[i].value>=4){
+					setEffect[5]+=3;
+					setEffect[7]+=25;
+				}
+				if(set[i].value>=3){
+					setEffect[3]+=8;
+					setEffect[4]+=8;
+					setEffect[0]+=15;
+				}
+				setEffect[1]+=9;
+				setEffect[2]+=9;
+				setEffect[0]+=5;
+				break;
+			case "이성":
+				setEffect[5]+=4;
+				break;
+			case "흐름":
+				if(set[i].value>= 3){
+					setEffect[0] +=10;
+					setEffect[3] +=3;
+					setEffect[4] +=3;
+					setEffect[6] +=3;
+					setEffect[7] +=15;
+					setEffect[8] +=3;
+				}
+				setEffect[0] +=10;
+				setEffect[1] +=10;
+				setEffect[2] +=10;
+				setEffect[3] +=2;
+				setEffect[4] +=2;
+				setEffect[6] +=2;
+				setEffect[7] +=10;
+				setEffect[8] +=2;
+				break;
+			case "방벽":
+				if(set[i].value>= 3){
+					setEffect[0] +=15;
+					setEffect[3] +=5;
+					setEffect[4] +=5;
+					setEffect[7] +=15;
+					setEffect[8] +=2;
+				}
+				setEffect[0] +=10;
+				setEffect[1] +=8;
+				setEffect[2] +=8;
+				setEffect[3] +=2;
+				setEffect[4] +=2;
+				setEffect[7] +=15;
+				setEffect[8] +=2;
+				break;
+			case "파괴":
+				if(set[i].value>= 3){
+					setEffect[1] +=3;
+					setEffect[5] +=1;
+					setEffect[6] +=2;
+					setEffect[7] +=10;
+				}
+				setEffect[1] +=10;
+				setEffect[0] +=5;
+				setEffect[6] +=2;
+				setEffect[7] +=5;
+				break;
+			case "마력":
+				if(set[i].value>= 3){
+					setEffect[2] +=8;
+					setEffect[5] +=1.5;
+					setEffect[6] +=2;
+					setEffect[7] +=7;
+				}
+				setEffect[2] +=7;
+				setEffect[0] +=5;
+				setEffect[6] +=4;
+				setEffect[7] +=2;
+				break;
+			case "종말":
+				if(set[i].value>= 3){
+					setEffect[1] +=13;
+					setEffect[6] +=2;
+					setEffect[7] +=15;
+				}
+				setEffect[1] +=12;
+				setEffect[5] +=1;
+				setEffect[6] +=4;
+				setEffect[7] +=5;
+				break;
+			case "반역":
+				if(set[i].value>=3){
+					setEffect[2] +=8;
+					setEffect[5] +=1;
+					setEffect[6] +=5;
+					setEffect[7] +=8;
+				}
+				setEffect[2] +=12;
+				setEffect[5] +=1;
+				setEffect[6] +=3;
+				setEffect[7] +=7;
+				break;
+			case "대현자":
+				if(set[i].value>= 3){
+					setEffect[0] +=30;
+					setEffect[9] +=3;
+					setEffect[10] +=3;
+					setEffect[11] +=3;
+				}
+				break;
+			case "환영":
+				setEffect[7] +=20;
+				setEffect[9] +=2;
+				setEffect[10] +=2;
+				setEffect[11] +=2;
+				break;
+			case "수제품":
+				if(set[i].value>= 3){
+					setEffect[0] +=15;
+					setEffect[7] +=15;
+					setEffect[9] +=3;
+					setEffect[10] +=3;
+					setEffect[11] +=3;
+				}
+				setEffect[0] +=10;
+				setEffect[7] +=10;
+				setEffect[9] +=2;
+				setEffect[10] +=2;
+				setEffect[11] +=2;
+				break;
+			case "4주년":
+				if(set[i].value>= 3){
+					setEffect[0] +=8;
+				}
+				break;
+			case "각성":
+				setEffect[0] +=15;
+				setEffect[1] +=5;
+				setEffect[2] +=5;
+				setEffect[5] +=2;
+				setEffect[6] +=4;
+				setEffect[7] +=15;
+				break;
+			case "Santa":
+				if(set[i].value>= 4){
+					setEffect[0] +=15;
+					setEffect[10] +=1;
+				}
+				if(set[i].value>= 3){
+					setEffect[1] +=15;
+					setEffect[2] +=15;
+					setEffect[9] +=0.7;
+					setEffect[11] +=0.7;
+				}
+					setEffect[1] +=10;
+				setEffect[2] +=10;
+				setEffect[9] +=0.3;
+				setEffect[11] +=0.3;
+				break;
+			defult :
+				break;
+			}
+			tmp+=set[i].name+set[i].value+", ";
+		}
+	}
+	//세트 이름과 개수 보여줌
+	var setCount=  document.getElementById("setcount");
+	setCount.innerText=tmp;
+
+	//세트 효과 적용
+	cells=rows[9].getElementsByTagName("td");
+	for(var i=0; i<cells.length; i++){
+		cells[i].innerText=setEffect[i];
+	}
+
+	//합계 구하기
+	for(var i=0; i<rows.length; i++){
+		cells=rows[i].getElementsByTagName("td");
+		if(i==10){
+			for(var j=0; j<cells.length; j++){
+				cells[j].innerText=sum[j];
+			}
+			break;
+		}
+		for(var j=0; j<cells.length; j++){
+			sum[j] +=parseFloat(cells[j].firstChild.data);
+		}
+	}
+
+}
+function range(w,x,y,z){
+//w는 무기~팔찌(0~8)
+//x, y는 item배열의 인덱스 (item[x][y])
+//z는 +-값
+
+//a는 item[x][y]*z(%)
+var a = item[x][y]*z/100;
+var rows =  document.getElementById("tbody").getElementsByTagName("tr");
+var cells=rows[w].getElementsByTagName("td");
+
+//클릭한 셀 데이터 변경
+cells[y-1].firstChild.data=parseFloat(item[x][y])+a;
+
+//합계 다시 계산
+var b=0;
+for(var i=0; i<rows.length; i++){
+	cells=rows[i].getElementsByTagName("td");
+	if(i==10){
+		cells[y-1].innerText=b;
+		break;
+	}
+	b+=parseFloat(cells[y-1].firstChild.data);
+}
+}
+
+function save(){
+var rows =  document.getElementById("tbody").getElementsByTagName("tr");
+var cells= rows[10].getElementsByTagName("td");
+
+var rows2 =  document.getElementById("tbody2");
+
+var list =  document.getElementById("list");
+var box =[document.getElementById("weapon"),
+document.getElementById("secondary"),
+document.getElementById("head"),
+document.getElementById("necklace"),
+document.getElementById("armor"),
+document.getElementById("gloves"),
+document.getElementById("ring"),
+document.getElementById("shoes"),
+document.getElementById("bracelet")]
+
+var tmp="<tr>";
+var tmp2="<tr><td>";
+
+
+for(var i=0; i<box.length; i++){
+	if(box[i].value!="미선택"){
+		tmp2+=box[i].value+", ";
+	}
+}
+
+for(var i=0; i<cells.length; i++){
+	tmp+="<td>"+parseFloat(cells[i].firstChild.data)+"</td>";
+}
+tmp+="</tr>";
+tmp2+="</td></tr>";
+
+rows2.innerHTML+=tmp;
+list.innerHTML+=tmp2;
+//<tr><td>나무팔찌</td></tr>
+}
+
+function reset(){
+var rows =  document.getElementById("tbody").getElementsByTagName("tr");
+var cells;
+for(var i=0; i<rows.length; i++){
+	cells=rows[i].getElementsByTagName("td");
+	for(var j=0; j<cells.length; j++){
+		cells[j].firstChild.data="0";
+	}
+}
+}
+</script>
+</head>
+
+<body>
+<div class="side">
+<form></br></br>
+<table>
+	<tr>
+	<td>무기 : </td>
+	<td><select id="weapon" onchange=ch_w(this.id)>
+	<option>미선택</option>
+	<option>나무 단검</option>
+	<option>나무 지팡이</option>
+	<option>숙련자 나무 단검</option>
+	<option>숙련자 나무 지팡이</option>
+	<option>청동 장검</option>
+	<option>청동 지팡이</option>
+	<option>철제단검</option>
+	<option>철제장검</option>
+	<option>강철검</option>
+	<option>장인 철검</option>
+	<option>엘프 지팡이</option>
+	<option>거뭇한 구슬</option>
+	<option>왕국대마도사 수정구</option>
+	<option>마영보구</option>
+	<option>틀어진 살수장검</option>
+	<option>살수장검</option>
+	<option>잿빛 장검</option>
+	<option>어둑한 장검</option>
+	<option>심연의 살수장검</option>
+	<option>모조엘프 활</option>
+	<option>엘프 활</option>
+	<option>크라켄의 활</option>
+	<option>가시돋친 선인장 망치</option>
+	<option>검은 칼</option>
+	<option>검은 지팡이</option>
+	<option>검은 활</option>
+	<option>용아장</option>
+	<option>용아검</option>
+	<option>용린선</option>
+	<option>용화극</option>
+	<option>종말의 계시</option>
+	<option>반역의 목소리</option>
+	<option>허상의 구슬</option>
+	<option>수제 만능 요리도구</option>
+	<option>수제 만능 사냥도구</option>
+	<option>붉은단검</option>
+	<option>붉은장검</option>
+	<option>은빛 사냥 도구</option>
+	<option>뼈 지팡이</option>
+	<option>사이클롭스 방망이</option>
+	<option>아크리치 수정구</option>
+	<option>레플리카 궁니르</option>
+	<option>자아를 가진 검</option>
+	<option>Santa ClauSword</option>
+	</select></td>
+	</tr>
+	<tr>
+	<td>보조 : </td>
+	<td><select id="secondary" onchange=ch_w(this.id)>
+	<option>미선택</option>
+	<option>나무 방패</option>
+	<option>숙련자 나무 방패</option>
+	<option>청동 봉</option>
+	<option>강철방패</option>
+	<option>장인 철검집</option>
+	<option>초급 마법서</option>
+	<option>톨라리안 마법서</option>
+	<option>틀어진 살수단검</option>
+	<option>살수단검</option>
+	<option>잿빛 단검</option>
+	<option>어둑한 단검</option>
+	<option>심연의 살수단검</option>
+	<option>모조엘프 화살</option>
+	<option>엘프 화살</option>
+	<option>크라켄의 화살</option>
+	<option>조잡한 털 뭉치</option>
+	<option>네크로리콘</option>
+	<option>검은 방패</option>
+	<option>검은 독고저</option>
+	<option>검은 마도서</option>
+	<option>불길한 커틀러스</option>
+	<option>종말의 환영</option>
+	<option>반역의 날개</option>
+	<option>수제 도시락</option>
+	<option>수제 미인주</option>
+	<option>삼류 권법서</option>
+	<option>날카로운 뼈</option>
+	<option>왕국 국새</option>
+	<option>소드위치 디아나</option>
+	<option>소드위치 샤트레아</option>
+	<option>산타복을 입은 디아나</option>
+	<option>산타복을 입은 샤트레아</option>
+	<option>Santa CrossGuard</option>
+	</select></td>
+	</tr>
+	<tr>
+	<td>머리 : </td>
+	<td><select id="head" onchange=ch_w(this.id)>
+	<option>미선택</option>
+	<option>나무 투구</option>
+	<option>숙련자 나무 투구</option>
+	<option>청동 투구</option>
+	<option>철제투구</option>
+	<option>강철투구</option>
+	<option>장인 철두건</option>
+	<option>비둘기 모자</option>
+	<option>틀어진 살수복면</option>
+	<option>살수복면</option>
+	<option>잿빛 복면</option>
+	<option>어둑한 복면</option>
+	<option>심연의 살수복면</option>
+	<option>여우 털 터번</option>
+	<option>검은 가면</option>
+	<option>검은 귀걸이</option>
+	<option>용 비늘 투구</option>
+	<option>흐름의 관찰자</option>
+	<option>방벽의 눈</option>
+	<option>대현자의 머리띠</option>
+	<option>토끼 인형 탈</option>
+	<option>임시 방화모</option>
+	<option>친위대장의 투구</option>
+	<option>여우 귀 장식</option>
+	<option>4주년 기념 물안경</option>
+	</select></td>
+	</tr>
+</table>
+<table>
+	<tr>
+	<td>목걸이 : </td>
+	<td><select id="necklace" onchange=ch_w(this.id)>
+	<option>미선택</option>
+	<option>금 목걸이</option>
+	<option>염원의 목걸이</option>
+	<option>드레이크목걸이</option>
+	<option>마나의 목걸이</option>
+	<option>틀어진 살수목걸이</option>
+	<option>살수목걸이</option>
+	<option>잿빛 목걸이</option>
+	<option>어둑한 목걸이</option>
+	<option>심연의 살수목걸이</option>
+	<option>얼음 결정 목걸이</option>
+	<option>검은 목걸이</option>
+	<option>용혼경</option>
+	<option>파괴의 근원</option>
+	<option>마력의 심장</option>
+	<option>대현자의 목걸이</option>
+	<option>늑대 발톱 목걸이</option>
+	<option>외눈목걸이</option>
+	</select></td>
+	</tr>
+	<tr>
+	<td>갑옷 : </td>
+	<td><select id="armor" onchange=ch_w(this.id)>
+	<option>미선택</option>
+	<option>나무 갑옷</option>
+	<option>숙련자 나무 갑옷</option>
+	<option>청동 갑옷</option>
+	<option>철제 경갑</option>
+	<option>철제중갑</option>
+	<option>강철갑옷</option>
+	<option>마법사 망토</option>
+	<option>아크리치 망토</option>
+	<option>틀어진 살수야행복</option>
+	<option>살수야행복</option>
+	<option>잿빛 야행복</option>
+	<option>어둑한 야행복</option>
+	<option>심연의 살수야행복</option>
+	<option>회색날개 옷</option>
+	<option>산뜻한 직물 조끼</option>
+	<option>검은 옷</option>
+	<option>검은 망토</option>
+	<option>용피갑</option>
+	<option>흐름잡이</option>
+	<option>방벽의 심장</option>
+	<option>범가죽 흉갑</option>
+	<option>오우거 가죽갑옷</option>
+	<option>친위대 제복</option>
+	<option>오크식 비키니</option>
+	<option>4주년 기념 수영복</option>
+	<option>Santa ClothArmor</option>
+	</select></td>
+	</tr>
+	<tr>
+	<td>장갑 : </td>
+	<td><select id="gloves" onchange=ch_w(this.id)>
+	<option>미선택</option>
+	<option>나무 장갑</option>
+	<option>숙련자 나무 장갑</option>
+	<option>청동 장갑</option>
+	<option>철제장갑</option>
+	<option>강철장갑</option>
+	<option>장인 철환</option>
+	<option>거뭇한 장갑</option>
+	<option>틀어진 살수장갑</option>
+	<option>살수장갑</option>
+	<option>잿빛 장갑</option>
+	<option>어둑한 장갑</option>
+	<option>심연의 살수장갑</option>
+	<option>질긴 가죽 장갑</option>
+	<option>검은 장갑</option>
+	<option>검은 탈리스만</option>
+	<option>용 가죽 장갑</option>
+	<option>종말의 손</option>
+	<option>반역의 분노</option>
+	<option>오우거 장갑</option>
+	<option>복음의 풍요</option>
+	<option>복음의 전파</option>
+	<option>Santa ClawsFist</option>
+	</select></td>
+	</tr>
+	<tr>
+	<td>반지 : </td>
+	<td><select id="ring" onchange=ch_w(this.id)>
+	<option>미선택</option>
+	<option>장인 철가락지</option>
+	<option>금 반지</option>
+	<option>청은 반지</option>
+	<option>지능의 반지Ⅰ</option>
+	<option>틀어진 살수반지</option>
+	<option>살수반지</option>
+	<option>잿빛 반지</option>
+	<option>어둑한 반지</option>
+	<option>심연의 살수반지</option>
+	<option>치명의 반지Ⅰ</option>
+	<option>야생화 반지</option>
+	<option>검은 반지</option>
+	<option>파괴의 잔해</option>
+	<option>마력의 흔적</option>
+	<option>대현자의 반지</option>
+	<option>멸천제륜</option>
+	<option>근력의 반지Ⅰ</option>
+	<option>기민의 반지Ⅰ</option>
+	<option>생명의 반지Ⅰ</option>
+	<option>회피의 반지Ⅰ</option>
+	<option>근력의 반지Ⅱ</option>
+	<option>기민의 반지Ⅱ</option>
+	<option>지능의 반지Ⅱ</option>
+	<option>생명의 반지Ⅱ</option>
+	<option>치명의 반지Ⅱ</option>
+	<option>회피의 반지Ⅱ</option>
+	<option>타락한 용의 반지</option>
+	</select></td>
+	</tr>
+</table>
+<table>
+	<tr>
+	<td>신발 : </td>
+	<td><select id="shoes" onchange=ch_w(this.id)>
+	<option>미선택</option>
+	<option>나무 신발</option>
+	<option>숙련자 나무 신발</option>
+	<option>청동 신발</option>
+	<option>철제신발</option>
+	<option>강철신발</option>
+	<option>장인 철신발</option>
+	<option>마법사의 신발</option>
+	<option>틀어진 살수신발</option>
+	<option>살수신발</option>
+	<option>잿빛 신발</option>
+	<option>어둑한 신발</option>
+	<option>심연의 살수신발</option>
+	<option>하얀날개 신발</option>
+	<option>회색 날개 신발</option>
+	<option>곰 발바닥 신발</option>
+	<option>용 날개 신발</option>
+	<option>흐름밟이</option>
+	<option>방벽의 발걸음</option>
+	<option>닳아빠진 짚신</option>
+	<option>4주년 기념 오리발</option>
+	</select></td>
+	</tr>
+	<tr>
+	<td>팔찌 : </td>
+	<td><select id="bracelet" onchange=ch_w(this.id)>
+	<option>미선택</option>
+	<option>나무팔찌</option>
+	<option>어둑한 팔찌</option>
+	<option>심연의 살수팔찌</option>
+	<option>살무사 가죽 팔찌</option>
+	<option>요동치는 생명의 비밀</option>
+	<option>파괴의 증거</option>
+	<option>마력의 속삭임</option>
+	<option>허무의 팔찌</option>
+	<option>수제 구슬 팔찌</option>
+	<option>청동팔찌</option>
+	<option>철제팔찌</option>
+	<option>강철팔찌</option>
+	<option>운철팔찌</option>
+	<option>금강팔찌</option>
+	<option>조로아스터 경전</option>
+	<option>복원한 드라우프니르</option>
+	<option>2주년 기념 팔찌</option>
+	<option>침묵을 부르는 팔찌</option>
+	</select></td>
+	</tr>
+</table>
+<table>
+	<tr>
+	<td>세트 : </td>
+	<td><div id="setcount"  style="width:135px;"></div></td>
+	</tr>
+	<tr class="sum">
+	<td>합계 : </td>
+	<td></td>
+	</tr>
+</table>
+<div onclick=reset()><button class="right" type="reset">초기화</button></div>
+</form>
+<div class="list">
+<table id="list">
+</table>
+</div>
+</div>
+<div class="ma">
+	<table>
+	<thead>
+	<tr><th>HP</th><th>PA</th><th>MA</th><th>PD</th><th>MD</th><th>AR</th>
+<th>CT</th><th>CD</th><th>AV</th><th>STR</th><th>AGI</th><th>WIS</th></tr>
+	</thead>
+	<tbody id="tbody">
+	<tr><td>0</td>
+<td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+<td>0</td><td>0</td><td>0</td></tr>
+	<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+<td>0</td><td>0</td><td>0</td></tr>
+	<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+<td>0</td><td>0</td><td>0</td></tr>
+	<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+<td>0</td><td>0</td><td>0</td></tr>
+	<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+<td>0</td><td>0</td><td>0</td></tr>
+	<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+<td>0</td><td>0</td><td>0</td></tr>
+	<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+<td>0</td><td>0</td><td>0</td></tr>
+	<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+<td>0</td><td>0</td><td>0</td></tr>
+	<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+<td>0</td><td>0</td><td>0</td></tr>
+	<tr><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+<td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+	<tr class="sum"><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td>
+<td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+	</tbody>
+	</table>
+<button onclick=save()>↓</button>
+	<table id="tbody2">
+	</table>
+</div>
+</body>
+</html>
